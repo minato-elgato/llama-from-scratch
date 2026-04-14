@@ -5,7 +5,7 @@ from config import ModelArgs
 from rmsnorm import RMSNorm
 from block import TransformerBlock
 
-class  Llama(nn.Module):
+class Llama(nn.Module):
     def __init__(self, args: ModelArgs):
         super().__init__()
 

@@ -22,6 +22,7 @@ class GroupedQueryAttention(nn.Module):
         self.n_kv_heads = n_kv_heads
         self.d_model = d_model
         self.head_dim = self.d_model // self.n_heads
+        assert self.head_dim % 2 == 0, "head_dim must be even for RoPE"
         self.n_repeats = self.n_heads // self.n_kv_heads
 
         self.wq = nn.Linear(self.d_model, self.n_heads * self.head_dim, bias=False)
@@ -64,6 +65,10 @@ class GroupedQueryAttention(nn.Module):
         k = k.transpose(1,2)
         v = v.transpose(1,2)
 
+        if self.key_cache.dtype != x.dtype or self.key_cache.device != x.device:
+            self.key_cache = self.key_cache.to(dtype=x.dtype, device=x.device)
+            self.value_cache = self.value_cache.to(dtype=x.dtype, device=x.device)
+
         #Filling up the key and value cache
         self.key_cache[:B,:,start_pos:start_pos+T,:] = k
         self.value_cache[:B,:,start_pos:start_pos+T,:] = v
@@ -87,14 +92,14 @@ class GroupedQueryAttention(nn.Module):
         attn_scores = F.softmax(attn_weights, dim=-1)
 
         #matmul attn_scores and value
-        attn_weights = torch.matmul(attn_scores, value_history)
+        context_vec = torch.matmul(attn_scores, value_history)
 
         #transposing from  B,H,T,D to B,T,H,D
-        attn_weights = attn_weights.transpose(1,2)
+        context_vec = context_vec.transpose(1,2)
 
         #changing Shape from B,T,H,D to B,T,D
-        attn_weights = attn_weights.contiguous().view(B, T, self.d_model)
+        context_vec = context_vec.contiguous().view(B, T, self.d_model)
 
-        output = self.out_proj(attn_weights)
+        output = self.out_proj(context_vec)
 
         return output

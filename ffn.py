@@ -4,11 +4,14 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class FeedForward(nn.Module):
-    def __init__(self, d_in: int, hidden_dim: int | None = None, multiple_of: int = 256)->None:
+    def __init__(self, d_in: int, hidden_dim: int | None = None, multiple_of: int = 256, ffn_dim_multiplier=None)->None:
         super().__init__()
 
         if hidden_dim is None:
             hidden_dim = int((8 * d_in) / 3)
+        
+        if ffn_dim_multiplier is not None:
+            hidden_dim = int(ffn_dim_multiplier * hidden_dim)
 
         hidden_dim = multiple_of * math.ceil(hidden_dim / multiple_of)
 

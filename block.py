@@ -26,10 +26,10 @@ class TransformerBlock(nn.Module):
         self.norm_ffn = RMSNorm(args.dim, args.norm_eps)
 
         #Feed Forward Block
-        self.feed_forward = FeedForward(args.dim, args.multiple_of)
+        self.feed_forward = FeedForward(args.dim, ffn_dim_multiplier=args.ffn_dim_multiplier , multiple_of=args.multiple_of)
 
     def forward(self, x, start_pos):
-        x = self.attention(self.norm_attention(x, start_pos))
+        x = x + self.attention(self.norm_attention(x), start_pos)
         output = x + self.feed_forward(self.norm_ffn(x))
 
         return output

@@ -3,6 +3,7 @@ import torch.nn as nn
 
 class RoPE(nn.Module):
   def __init__(self, max_seq_len: int = 4096, head_dim: int = 128, base: float=10000.0)->None:
+    assert head_dim % 2 == 0, "head_dim must be even for RoPE"
     super().__init__()
     self.max_seq_len = max_seq_len
     index = torch.arange(0, head_dim, 2, dtype=torch.float32)
@@ -21,8 +22,8 @@ class RoPE(nn.Module):
     seq_len = x.shape[1]
     assert seq_len + start_pos <= self.max_seq_len, "seq_len+start_pos should be less than max_seq_len"
     
-    sin = self.sin_cached[start_pos : start_pos + seq_len, :]
-    cos = self.cos_cached[start_pos : start_pos + seq_len, :]
+    sin = self.sin_cached[start_pos : start_pos + seq_len, :].to(dtype=x.dtype)
+    cos = self.cos_cached[start_pos : start_pos + seq_len, :].to(dtype=x.dtype)
     
     sin = sin.unsqueeze(0).unsqueeze(2)
     cos = cos.unsqueeze(0).unsqueeze(2)
