@@ -12,7 +12,7 @@ class  Llama(nn.Module):
         self.args = args
 
         #Token Embeddings
-        self.token_emb = nn.Embedding(args.max_seq_len, args.dim)
+        self.token_emb = nn.Embedding(args.vocab_size, args.dim)
 
         #Stacking Transformer Blocks
         self.layers = nn.ModuleList([
@@ -35,11 +35,11 @@ class  Llama(nn.Module):
 
         # Pass through each Transformer block
         for layer in self.layers:
-            x= self.layers(x, start_pos)
+            x= layer(x, start_pos)
         
         #Final norm
         x = self.norm(x)
-        
+
         # Project to vocab logits -> (B, T, vocab_size)
         logits = self.output(x)
 
