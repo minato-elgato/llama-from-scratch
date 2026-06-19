@@ -38,9 +38,11 @@ For a full $d$-dimensional tensor, this rotation is applied piecewise across spl
 
 $$\langle f_q(\mathbf{x}_m, m), f_k(\mathbf{x}_n, n) \rangle = \mathbf{g}(\mathbf{x}_m, \mathbf{x}_n, m - n)$$
 
-#### Vector Transformation Mechanics
-<video src="assets/RoPEVisualization.mp4" controls="controls" style="max-width: 100%;">
-</video>
+
+
+https://github.com/user-attachments/assets/27a29c38-097c-4470-85e1-3122768cab25
+
+
 
 ### SwiGLU Activation Function
 The feed-forward network (FFN) blocks are optimized using the Swish-Gated Linear Unit (SwiGLU) variant, which replaces standard non-linearities like ReLU or GELU to enhance training stability and representation capacity. 
